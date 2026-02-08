@@ -62,7 +62,6 @@
 
 ### 5. Визуализация контекста системы — диаграмма С4
 
-Диаграмма контекста в модели C4.
 [as-is_c4_context](https://github.com/ZergZet/YP-sprint1/blob/warmhouse/diagrams/as-is/as-is_c4_context.puml)
 
 
