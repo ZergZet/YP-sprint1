@@ -74,12 +74,8 @@
 
 Чтобы добавить ссылку в файл Readme.md, нужно использовать синтаксис Markdown. Это делают так:
 
-[as-is_c4_context](https://github.com/ZergZet/YP-sprint1/blob/warmhouse/diagrams/as-is/as-is_c4_context.puml)
-
-Замените `Текст ссылки` текстом, который хотите использовать для ссылки. Вместо `URL` вставьте адрес, на который должна вести ссылка. Например:
-
 ```markdown
-[Посетите Яндекс](https://ya.ru/)
+[as-is_c4_context](https://github.com/ZergZet/YP-sprint1/blob/warmhouse/diagrams/as-is/as-is_c4_context.puml)
 ```
 
 # Задание 2. Проектирование микросервисной архитектуры
