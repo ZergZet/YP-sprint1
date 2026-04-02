@@ -82,13 +82,11 @@
 
 [to-be_c4_container](https://github.com/ZergZet/YP-sprint1/blob/warmhouse/diagrams/to-be/to-be_c4_container.puml)
 
-**Диаграмма компонентов (Components)**
-
-[to-be_c4_component](https://github.com/ZergZet/YP-sprint1/blob/warmhouse/diagrams/to-be/to-be_c4_component.puml)
-
-**Диаграмма кода (Code)**
-
-[to-be_c4_code](https://github.com/ZergZet/YP-sprint1/blob/warmhouse/diagrams/to-be/to-be_c4_code.puml)
+**Диаграммы компонентов (Components)**
+[to-to-be_c4_component_device_auth](https://github.com/ZergZet/YP-sprint1/blob/warmhouse/diagrams/to-be/components/to-be_c4_component_device_auth.puml)
+[to-be_c4_component_device_control](https://github.com/ZergZet/YP-sprint1/blob/warmhouse/diagrams/to-be/components/to-be_c4_component_device_control.puml)
+[to-be_c4_component_device_monitoring](https://github.com/ZergZet/YP-sprint1/blob/warmhouse/diagrams/to-be/components/to-be_c4_component_device_monitoring.puml)
+[to-be_c4_component_user_auth](https://github.com/ZergZet/YP-sprint1/blob/warmhouse/diagrams/to-be/components/to-be_c4_component_user_auth.puml)
 
 # Задание 3. Разработка ER-диаграммы
 
