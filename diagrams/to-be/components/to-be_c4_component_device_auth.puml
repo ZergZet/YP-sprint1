@@ -1,0 +1,40 @@
+@startuml
+title Диаграмма компонентов Идентификация и аутентификация пользователей
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Container.puml
+
+Person(user, "Пользователь", "Просматривает состояние, управляет, регистрирует датчики")
+Person(administrator, "Администратор", "Управляет подключением пользователей, устройств, сетвой безопасностью и телеметрией")
+Container(APIGW, "API-Gateway", "NGinx", "Масштабирование, балансировка нагрузки, шифрование трафика, проксирование и аутентификация")
+ 
+Container_Boundary(UserAuth, "Идентификация и аутентификация пользователей") {
+    
+    Component(APIManager, "API Manager", "Go", "Исполняет API вызовы регистрации, аутентификации устройств с возможностью получения SSL ключей доступа.")
+    Component(DBManager, "DB Manager", "Go", "Взаимодействует с базой данных")
+    Component(KeyChecker, "Key Checker", "Go", "Проверка ключей регистрации устройства")
+    Component(CertificationAuthority, "Центр Сертификации", "Go", "Управление SSL сертификатами устройств")
+    Component(DeviceRegister, "Регистрация устройств", "Go", "Управление ключами доступа для устройств")
+    
+  
+    Rel(APIGW, APIManager,"Аутентификация пользователей [REST]")
+    Rel(APIManager, DeviceRegister,"Регистрация устройства")
+    Rel(APIManager, KeyChecker,"Проверка ключей")
+
+    Rel( DeviceRegister, KeyChecker ,"Проверка ключей")
+    Rel( KeyChecker, DBManager, "Чтение/запись данных")
+    Rel( KeyChecker, CertificationAuthority, "Проверка SSL ключей")
+    Rel( DeviceRegister, DBManager, "Чтение/запись данных")
+
+    Component(Telemetry, "Telemetry", "[OTel]", "Логирование и сбор метрик")
+}
+
+ContainerDb(UserAuthDB, "Database", "PostgreSQL", "Хранит данные устройств")
+Rel(DBManager, UserAuthDB,"Чтение и запись данных устройствах")
+
+Container(Prometeus, "Prometeus", "Prometeus", "Сбор метрик и телеметрии")
+Rel(Telemetry, Prometeus,"Логирование и сбор метрик")
+   
+@enduml
