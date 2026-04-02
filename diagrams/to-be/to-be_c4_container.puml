@@ -43,11 +43,15 @@ Boundary(WarmHouseSystem, "Умный дом") {
     ContainerDb(TemprSensorDB, "База мониторинга температуры", "PostgreSQL", "Хранит данные мониторинга температуры")
     Container(CameraSensor, "Камера наблюдения", "Go", "Обрабатвает данные с камеры наблюдения")
     ContainerDb(CameraSensorDB, "База камеры наблюдения", "PostgreSQL", "Хранит данные камеры наблюдения")
-
+    ContainerDb(DeviceMonitoringS3DB, "База конфигурации устройств", "S3", "Хранит историю наблюдений")
+    
+    
     Rel(APIGW, TemprSensor,"Команды получения данных [REST]")
     Rel(APIGW, CameraSensor,"Чтение/запись данных Мониторинг температуры")
     Rel(TemprSensor, TemprSensorDB,"Команды получения данных [REST]")
-    Rel(CameraSensor, CameraSensorDB,"Чтение/запись данных Камера наблюдения")
+    Rel(CameraSensor, CameraSensorDB,"Чтение/запись данных камер наблюдения")
+    Rel(CameraSensor, DeviceMonitoringS3DB,"Чтение и запись исторических данных")
+
   }
 
   Boundary(ControlDomain, "Домен управление устройствами") {
