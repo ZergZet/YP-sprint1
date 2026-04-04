@@ -15,7 +15,6 @@ Container_Boundary(UserAuth, "Идентификация и аутентифик
     Component(APIManager, "API Manager", "Go", "Исполняет API вызовы регистрации, аутентификации устройств с возможностью получения SSL ключей доступа.")
     Component(DBManager, "DB Manager", "Go", "Взаимодействует с базой данных")
     Component(KeyChecker, "Key Checker", "Go", "Проверка ключей регистрации устройства")
-    Component(CertificationAuthority, "Центр Сертификации", "Go", "Управление SSL сертификатами устройств")
     Component(DeviceRegister, "Регистрация устройств", "Go", "Управление ключами доступа для устройств")
     
   
@@ -25,11 +24,14 @@ Container_Boundary(UserAuth, "Идентификация и аутентифик
 
     Rel( DeviceRegister, KeyChecker ,"Проверка ключей")
     Rel( KeyChecker, DBManager, "Чтение/запись данных")
-    Rel( KeyChecker, CertificationAuthority, "Проверка SSL ключей")
     Rel( DeviceRegister, DBManager, "Чтение/запись данных")
 
     Component(Telemetry, "Telemetry", "[OTel]", "Логирование и сбор метрик")
 }
+
+Container(CertificateAuthority, "Центра сертификации", "EJBCA[Java]", "Управление SSL сертификатами")
+Rel( KeyChecker, CertificateAuthority, "Проверка SSL ключей")
+  
 
 ContainerDb(UserAuthDB, "Database", "PostgreSQL", "Хранит данные устройств")
 Rel(DBManager, UserAuthDB,"Чтение и запись данных устройствах")
