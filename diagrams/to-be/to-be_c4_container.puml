@@ -29,11 +29,16 @@ Boundary(WarmHouseSystem, "Умный дом") {
     ContainerDb(UserAuthDB, "Database", "PostgreSQL", "Хранит данные и полномочия пользователей")
     Container(DeviceAuth, "Регистрация устройств", "Go", "Идентификация и аутентификация устройств")
     ContainerDb(DeviceAuthDB, "База зарегистрированных устройств", "PostgreSQL", "Хранит данные о подключённых устройствах")
+    Container(CertificasteAuthority, "Центра сертификации", "EJBCA[Java]", "Управление SSL сертификатами")
+
 
     Rel(APIGW, UserAuth,"Аутентификация пользователей [REST]")
     Rel(APIGW, DeviceAuth,"Чтение/запись данных о пользователях")
     Rel(UserAuth, UserAuthDB,"Регистрация устройств[REST]")
     Rel(DeviceAuth, DeviceAuthDB,"Регистрация/изменение устройств")
+
+    Rel(DeviceAuth, CertificasteAuthority,"Запрос и проверка сертификатов [REST]")
+    Rel(administrator, CertificasteAuthority,"Управление сертификатами")
 
   }
 
