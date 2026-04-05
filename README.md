@@ -104,7 +104,7 @@
 
 ### 2. Документация API
 
-Здесь приложите ссылки на документацию API для микросервисов, которые вы спроектировали в первой части проектной работы. Для документирования используйте Swagger/OpenAPI или AsyncAPI.
+[OpenAPI](https://github.com/ZergZet/YP-sprint1/blob/warmhouse/diagrams/API/WarmHouseOpenApi.json) <br>
 
 # Задание 5. Работа с docker и docker-compose
 
