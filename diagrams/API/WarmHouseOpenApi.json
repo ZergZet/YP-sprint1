@@ -1,0 +1,672 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "WarmHouse API",
+    "description": "API управления умным домом: идентификация, аутентификация, управления устройствами",
+    "version": "1.0.0",
+    "contact": {
+      "name": "WarmHouse",
+      "email": "resp@warmhouse.ru"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://openapi.warmhouse.ru",
+      "description": "Cервер управления умным домом"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Authentication",
+      "description": "Идентификация и аутентификация"
+    },
+    {
+      "name": "Users",
+      "description": "Управление пользователями"
+    },
+    {
+      "name": "Devices",
+      "description": "Управление устройствами"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "UserID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "UserLogin": {
+            "type": "string"
+          },
+          "DisplayName": {
+            "type": "string"
+          },
+          "UserPassword": {
+            "type": "string",
+            "format": "password"
+          },
+          "CreateDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ChangeDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "AuthenticationResponse": {
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string"
+          },
+          "refresh_token": {
+            "type": "string"
+          }
+        }
+      },
+      "Device": {
+        "type": "object",
+        "properties": {
+          "DeviceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "DeviceTypeId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "DeviceName": {
+            "type": "string"
+          },
+          "SerialNumber": {
+            "type": "string"
+          },
+          "DeviceState": {
+            "type": "string",
+            "enum": [
+              "online",
+              "offline",
+              "pending",
+              "error"
+            ]
+          },
+          "DeviceType": {
+            "type": "string",
+            "enum": [
+              "light_controler",
+              "warm_controller",
+              "gate_controller",
+              "camera",
+              "temperature_sensor"
+            ]
+          },
+          "RegisterDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "LastConnectedDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "DeviceCommand": {
+        "type": "object",
+        "required": [
+          "command"
+        ],
+        "properties": {
+          "command": {
+            "type": "string",
+            "enum": [
+              "ON",
+              "OFF",
+              "LOCK",
+              "UNLOCK",
+              "SET_VALUE",
+              "GET_VALUE"
+            ]
+          },
+          "value": {
+            "type": "number",
+            "description": "Для SET_VALUE"
+          }
+        },
+        "example": {
+          "command": "SET",
+          "value": 25
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "paths": {
+    "/authentication/addnewuser": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Добавление нового пользователя",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "UserLogin": {
+                    "type": "string"
+                  },
+                  "DisplayName": {
+                    "type": "string"
+                  },
+                  "Password": {
+                    "type": "string"
+                  }
+                },
+                "example": {
+                  "UserLogin": "super_user",
+                  "DisplayName": "Иванов Иван Иванович",
+                  "Password": "Pa$$w0rd"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Пользователь успешно создан",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректные входные данные",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/authentication/login": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Аутентификация пользователя",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "UserLogin": {
+                    "type": "string"
+                  },
+                  "Password": {
+                    "type": "string"
+                  }
+                },
+                "example": {
+                  "UserLogin": "super_user",
+                  "Password": "Pa$$w0rd"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешная аутентификация",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Неверное сочетание логина и пароля",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/authentication/logout": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Выход из системы",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешный выход",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Logged out"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/lock": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Блокирование учетной записи",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "UserID": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Учётная запись заблокирована",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "User locked"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Недостаточно прав для выполнениея операции",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/unlock": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Разблокирование учетной записи",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "UserID": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Учётная запись разблокирована",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "User unlocked"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Недостаточно прав для выполнениея операции",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/removeuser": {
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Удаление учетной записи",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Учётная запись успешно удалена",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "User deleted"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Ошибка удаления пользователя",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/devices/registerdevice": {
+      "post": {
+        "tags": [
+          "Devices"
+        ],
+        "summary": "Регистрация устройства",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Device"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Устройство успешно зарегистрировано",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Device"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректные данные",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/devices/removedevice": {
+      "delete": {
+        "tags": [
+          "Devices"
+        ],
+        "summary": "Удаление устройства",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "device_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Устройство удалено",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Device removed"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Устройство не найдено",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/devices/getdevices": {
+      "get": {
+        "tags": [
+          "Devices"
+        ],
+        "summary": "Получить список устройств",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HouseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Список устройств",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Device"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Неккоректные входные данные",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/devices/{deviceId}/command": {
+      "post": {
+        "tags": [
+          "Devices"
+        ],
+        "summary": "Отправить команду устройству",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "DeviceID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Команда отправлена"
+          },
+          "404": {
+            "description": "Устройство не найдено",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/devices/{DeviceID}": {
+      "get": {
+        "tags": [
+          "Devices"
+        ],
+        "summary": "Получение информации об устройстве",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "DeviceID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Информация об устройстве",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Device"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Устройство не найдено",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
