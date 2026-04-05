@@ -41,53 +41,55 @@ Boundary(WarmHouseSystem, "Умный дом") {
     Rel(administrator, CertificasteAuthority,"Управление сертификатами")
 
   }
-
-  Boundary(MonitoringDomain, "Домен мониторинга данных с устройств") {
+  Boundary(Domain, "Домен мониторинга и управления устройствами") {
   
-    Container(TemprSensor, "Мониторинг температуры", "Go", "Предоставляет данные температуры")
-    ContainerDb(TemprSensorDB, "База мониторинга температуры", "PostgreSQL", "Хранит данные мониторинга температуры")
-    Container(CameraSensor, "Камера наблюдения", "Go", "Обрабатвает данные с камеры наблюдения")
-    ContainerDb(CameraSensorDB, "База камеры наблюдения", "PostgreSQL", "Хранит данные камеры наблюдения")
-    ContainerDb(DeviceMonitoringS3DB, "База конфигурации устройств", "S3", "Хранит историю наблюдений")
+    Boundary(MonitoringDomain, "Поддомен мониторинга данных с устройств") {
     
-    
-    Rel(APIGW, TemprSensor,"Команды получения данных [REST]")
-    Rel(APIGW, CameraSensor,"Чтение/запись данных Мониторинг температуры")
-    Rel(TemprSensor, TemprSensorDB,"Команды получения данных [REST]")
-    Rel(CameraSensor, CameraSensorDB,"Чтение/запись данных камер наблюдения")
-    Rel(CameraSensor, DeviceMonitoringS3DB,"Чтение и запись исторических данных")
+      Container(TemprSensor, "Мониторинг температуры", "Go", "Предоставляет данные температуры")
+      ContainerDb(TemprSensorDB, "База мониторинга температуры", "PostgreSQL", "Хранит данные мониторинга температуры")
+      Container(CameraSensor, "Камера наблюдения", "Go", "Обрабатвает данные с камеры наблюдения")
+      ContainerDb(CameraSensorDB, "База камеры наблюдения", "PostgreSQL", "Хранит данные камеры наблюдения")
+      ContainerDb(DeviceMonitoringS3DB, "База конфигурации устройств", "S3", "Хранит историю наблюдений")
+      
+      
+      Rel(APIGW, TemprSensor,"Команды получения данных [REST]")
+      Rel(APIGW, CameraSensor,"Чтение/запись данных Мониторинг температуры")
+      Rel(TemprSensor, TemprSensorDB,"Команды получения данных [REST]")
+      Rel(CameraSensor, CameraSensorDB,"Чтение/запись данных камер наблюдения")
+      Rel(CameraSensor, DeviceMonitoringS3DB,"Чтение и запись исторических данных")
 
+    }
+
+    Boundary(ControlDomain, "Поддомен управление устройствами") {
+  
+      Container(WarmСontroller, "Выключатель отопления", "Go", "Управляет состоянием отопления")
+      ContainerDb(WarmСontrollerDB, "База управления отоплением", "PostgreSQL", "Конфигурационные и исторические данные управления отоплением")
+
+      Rel(WarmСontroller, WarmСontrollerDB,"Чтение конфигурационных и исторических данные управления отоплением")
+      Rel(APIGW, WarmСontroller,"Команды управления [REST]")
+      
+      Container(GateСontroller, "Открывание воротя", "Go", "Управляет открыванием и закрываеним ворот")
+      ContainerDb(GateСontrollerDB, "База управления воротами", "PostgreSQL", "Конфигурационные и исторические данные управления воротами")
+
+      Rel(GateСontroller, GateСontrollerDB,"Чтение конфигурационных и исторических данные управления воротами")
+      Rel(APIGW, GateСontroller,"Команды управления [REST]")
+
+      Container(LigthСontroller, "Управление светом", "Go", "Управляет включением и выключением света")
+      ContainerDb(LigthСontrollerDB, "База управления светом", "PostgreSQL", "Конфигурационные и исторические данные управления светом")
+
+      Rel(LigthСontroller, LigthСontrollerDB,"Чтение конфигурационных и исторических данные управления светом")
+      Rel(APIGW, LigthСontroller,"Команды управления [REST]")
+    }
+  
+    ContainerQueue(RabbitMQ, "RabbitMQ [MQTT] Message Brocker", "Взаимодействие с устройствами по стандартным протоколам[MQTT]")
+    Rel(RabbitMQ, APIGW , "Запросы данных и команды управления устройствами[MQTT]")
+    Rel(WarmСontroller, RabbitMQ,"Команды управления [MQTT]")
+    Rel(GateСontroller, RabbitMQ,"Команды управления [MQTT]")
+    Rel(LigthСontroller, RabbitMQ,"Команды управления [MQTT]")
+    Rel(TemprSensor, RabbitMQ,"Команды получения данных [MQTT]")
+    Rel(CameraSensor, RabbitMQ,"Команды получения данных [MQTT]")
   }
 
-  Boundary(ControlDomain, "Домен управление устройствами") {
- 
-    Container(WarmСontroller, "Выключатель отопления", "Go", "Управляет состоянием отопления")
-    ContainerDb(WarmСontrollerDB, "База управления отоплением", "PostgreSQL", "Конфигурационные и исторические данные управления отоплением")
-
-    Rel(WarmСontroller, WarmСontrollerDB,"Чтение конфигурационных и исторических данные управления отоплением")
-    Rel(APIGW, WarmСontroller,"Команды управления [REST]")
-    
-    Container(GateСontroller, "Открывание воротя", "Go", "Управляет открыванием и закрываеним ворот")
-    ContainerDb(GateСontrollerDB, "База управления воротами", "PostgreSQL", "Конфигурационные и исторические данные управления воротами")
-
-    Rel(GateСontroller, GateСontrollerDB,"Чтение конфигурационных и исторических данные управления воротами")
-    Rel(APIGW, GateСontroller,"Команды управления [REST]")
-
-    Container(LigthСontroller, "Управление светом", "Go", "Управляет включением и выключением света")
-    ContainerDb(LigthСontrollerDB, "База управления светом", "PostgreSQL", "Конфигурационные и исторические данные управления светом")
-
-    Rel(LigthСontroller, LigthСontrollerDB,"Чтение конфигурационных и исторических данные управления светом")
-    Rel(APIGW, LigthСontroller,"Команды управления [REST]")
-  }
-  
-  ContainerQueue(RabbitMQ, "RabbitMQ [MQTT] Message Brocker", "Взаимодействие с устройствами по стандартным протоколам[MQTT]")
-   Rel(RabbitMQ, APIGW , "Запросы данных и команды управления устройствами[MQTT]")
-   Rel(WarmСontroller, RabbitMQ,"Команды управления [MQTT]")
-   Rel(GateСontroller, RabbitMQ,"Команды управления [MQTT]")
-   Rel(LigthСontroller, RabbitMQ,"Команды управления [MQTT]")
-   Rel(TemprSensor, RabbitMQ,"Команды получения данных [MQTT]")
-   Rel(CameraSensor, RabbitMQ,"Команды получения данных [MQTT]")
-   
   Boundary( Telemetry, "Телеметрия"){
     Container(Grafana, "Grafana", "Grafana", "Построение графиков и отчётова")
     Container(Prometeus, "Prometeus", "Prometeus", "Сбор метрик и телеметрии")
