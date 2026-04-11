@@ -30,11 +30,6 @@ WORKDIR /app
 # Copy the binary from the builder stage
 COPY --from=builder /app/smarthome .
 
-# Копируем файлы временных зон из /usr/share/zoneinfo
-COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
-# Указываем нужную временную зону через переменную окружения
-ENV TZ=Europe/Moscow
-
 # Expose the port the app runs on
 EXPOSE 8080
 
