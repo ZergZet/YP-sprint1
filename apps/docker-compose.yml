@@ -1,5 +1,5 @@
 version: '3.8'
-
+    
 services:
   postgres:
     image: postgres:16-alpine
@@ -34,10 +34,13 @@ services:
     restart: unless-stopped
     networks:
       - smarthome-network      
-  app:
+  app:    
     build:
       context: ./smart_home
       dockerfile: Dockerfile
+      ## использовать сеть хоста при сборке
+      network: host      
+      network_mode: "host"      
     container_name: smarthome-app
     depends_on:
       postgres:
