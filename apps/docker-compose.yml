@@ -4,7 +4,6 @@ services:
   postgres:
     image: postgres:16-alpine
     container_name: smarthome-postgres
-  ## тут нужно добавить настройки
     environment:
       POSTGRES_DB: smarthome
       POSTGRES_USER: postgres
@@ -22,8 +21,7 @@ services:
     restart: unless-stopped
     networks:
       - smarthome-network
-  ## temperature-api:
-  ## тут нужно добавить приложение
+
   temperature-api:
     build:
       context: ./temperature-api
@@ -34,13 +32,12 @@ services:
     restart: unless-stopped
     networks:
       - smarthome-network      
+      
   app:    
     build:
       context: ./smart_home
       dockerfile: Dockerfile
-      ## использовать сеть хоста при сборке
-      network: host      
-      network_mode: "host"      
+      network: host       # только для сборки (go mod download и т.п.)
     container_name: smarthome-app
     depends_on:
       postgres:
