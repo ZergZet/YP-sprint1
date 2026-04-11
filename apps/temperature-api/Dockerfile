@@ -3,12 +3,11 @@ FROM python:3.12-slim
 WORKDIR /app
 
 COPY requirements.txt .
-#COPY requ requ
+COPY requ requ
 
-#RUN pip install --no-cache-dir --upgrade pip
-
-RUN pip install --no-cache-dir -r requirements.txt
-#RUN pip install --no-cache-dir --no-index --find-links requ -r requirements.txt
+#RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --no-index --find-links requ -r requirements.txt
+RUN rm -R requ
 
 COPY main.py .
 
