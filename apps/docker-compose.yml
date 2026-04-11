@@ -37,7 +37,6 @@ services:
     build:
       context: ./smart_home
       dockerfile: Dockerfile
-      network: host       # только для сборки (go mod download и т.п.)
     container_name: smarthome-app
     depends_on:
       postgres:
