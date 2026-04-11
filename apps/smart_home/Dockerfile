@@ -1,10 +1,7 @@
 # Build stage
 FROM golang:1.22-alpine AS builder
 
-# Принудительно задаём DNS (временный костыль)
-RUN echo "nameserver 8.8.8.8" > /etc/resolv.conf && \
-    echo "nameserver 8.8.4.4" >> /etc/resolv.conf
-    
+   
 # Set working directory
 WORKDIR /app
 
