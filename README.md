@@ -120,8 +120,9 @@
    
 [temperature-api ](https://github.com/ZergZet/YP-sprint1/tree/warmhouse/apps/temperature-api)
 ```
- запрос по Locations :  /temperature?location=
- запрос по sensorId: /temperature/{sensorId}
+Пояснение
+ Запрос по Locations :  /temperature?location=
+ Запрос по sensorId: /temperature/{sensorId}
 ```
 
 Locations - название комнаты, sensorId - идентификатор названия комнаты
