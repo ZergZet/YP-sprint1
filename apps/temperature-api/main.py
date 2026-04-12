@@ -3,6 +3,7 @@ import random
 
 app = FastAPI()
 
+
 SENSOR_LOCATIONS = {
     "1": "Living Room",
     "2": "Bedroom",
@@ -18,17 +19,15 @@ LOCATIONS_SENSOR = {
 @app.get("/temperature")
 def get_temperature(location: str = Query(...)):
     return {
-        "location": location",
-   #     "sensor_id": LOCATIONS_SENSOR.get(location, "0"),
-        "temperature": round(random.uniform(-40.0, 40.0), 1)        
+        "location": location,
+        "sensor_id": LOCATIONS_SENSOR.get(location, "0"),
+        "temperature": round(random.uniform(-40, 40), 1)
     }
-    
-"""
+
 @app.get("/temperature/{sensor_id}")
-def get_temperature_by_sensor(sensor_id: str):
+def get_temperature_sensor(sensor_id: str):
     return {
-    #    "location": SENSOR_LOCATIONS.get(sensor_id, "Unknown"),
-        "sensor_id": sensor_id",
-        "temperature": round(random.uniform(-40.0, 40.0), 1)        
+        "location": SENSOR_LOCATIONS.get(sensor_id,"Unknown"),
+        "sensor_id": sensor_id,
+        "temperature": round(random.uniform(-40, 40), 1)
     }
-"""
