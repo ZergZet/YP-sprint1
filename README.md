@@ -117,6 +117,12 @@
 Вам нужно:
 
 1) сделать простое приложение temperature-api на любом удобном для вас языке программирования, которое при запросе /temperature?location= будет отдавать рандомное значение температуры.
+   
+[temperature-api ](https://github.com/ZergZet/YP-sprint1/tree/warmhouse/apps/temperature-api)
+```
+ запрос по Locations :  /temperature?location=
+ запрос по sensorId: /temperature/{sensorId}
+```
 
 Locations - название комнаты, sensorId - идентификатор названия комнаты
 
@@ -152,7 +158,9 @@ Locations - название комнаты, sensorId - идентификато
 
 2) Приложение следует упаковать в Docker и добавить в docker-compose. Порт по умолчанию должен быть 8081
 
-3) Кроме того для smart_home приложения требуется база данных - добавьте в docker-compose файл настройки для запуска postgres с указанием скрипта инициализации ./smart_home/init.sql
+   [docker-compose.yml](https://github.com/ZergZet/YP-sprint1/blob/warmhouse/apps/docker-compose.yml)
+
+4) Кроме того для smart_home приложения требуется база данных - добавьте в docker-compose файл настройки для запуска postgres с указанием скрипта инициализации ./smart_home/init.sql
 
 Для проверки можно использовать Postman коллекцию smarthome-api.postman_collection.json и вызвать:
 
