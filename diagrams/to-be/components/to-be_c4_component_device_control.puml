@@ -1,0 +1,40 @@
+@startuml
+title Диаграмма компонентов Идентификация и аутентификация пользователей
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Container.puml
+
+Person(user, "Пользователь", "Просматривает состояние, управляет, регистрирует датчики")
+Person(administrator, "Администратор", "Управляет подключением пользователей, устройств, сетвой безопасностью и телеметрией")
+Container(APIGW, "API-Gateway", "NGinx", "Масштабирование, балансировка нагрузки, шифрование трафика, проксирование и аутентификация")
+ 
+Container_Boundary(UserAuth, "Идентификация и аутентификация пользователей") {
+    
+    Component(APIManager, "API Manager", "Go", "Исполняет API вызовы регистрации, аутентификации устройств с возможностью получения SSL ключей доступа.")
+    Component(DeviceControlManager, "Device Control Manager", "Go", "Логика управления устройством")
+    
+    Component(DBManager, "DB Manager", "Go", "Взаимодействует с базой данных")
+    Component(DeviceControl, "Взаимодействие с устройством", "Go", "Взаимодействие с устройством по MQTT")
+   
+  
+    Rel(APIGW, APIManager,"Команды управления устройствами[REST]")
+    Rel(APIManager, DeviceControlManager,"")
+    Rel(DeviceControlManager, DBManager,"")
+
+    Rel( DeviceControlManager, DeviceControl ,"")
+    
+    Component(Telemetry, "Telemetry", "[OTel]", "Логирование и сбор метрик")
+}
+
+ContainerDb(DeviceControlDB, "База конфигурации устройств", "PostgreSQL", "Хранит конфигурации, настройки подключённых устройств")
+Rel(DBManager, DeviceControlDB,"Чтение и запись данных")
+
+Container(Prometeus, "Prometeus", "Prometeus", "Сбор метрик и телеметрии")
+Rel(Telemetry, Prometeus,"Логирование и сбор метрик")
+
+ContainerQueue(RabbitMQ, "RabbitMQ [MQTT] Message Brocker", "Взаимодействие с устройствами по стандартным протоколам[MQTT]")
+Rel(DeviceControl, RabbitMQ, "Команды управления [MQTT]")
+    
+@enduml

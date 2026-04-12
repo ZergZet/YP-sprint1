@@ -1,0 +1,119 @@
+
+@startuml
+
+title ER-диаграмма: "Умный Дом"
+
+package "Smart Home" {
+    entity "Users" {
+        *UserID             UUID
+        UserLogin           STRING
+        DisplayName         STRING
+        CreateDate          TIMESTAMP
+        ChangeDate          TIMESTAMP
+    }
+
+    entity "Roles" {
+        *RoleID             UUID
+        RoleName            STRING
+        RigthID             UUID
+        RoleDescription     STRING
+    }
+
+    entity "UserRoles" {
+        *UserID              UUID 
+        *RoleID              UUID         
+    }
+
+    entity "RoleRigths" {
+        *RigthID            UUID
+        AccessObject        enum
+        Permission          enum
+    }
+        
+    entity "Houses" {
+        *HouseId            UUID
+        UserID              UUID
+        HomeAddress         STRING
+    }
+
+    entity "Devices" {
+        *DeviceId           UUID
+        DeviceTypeId        UUID
+        SerialName          STRING
+        SerialNumber        STRING
+        DevicesState        enum
+        RegisterDate        TIMESTAMP
+        LastConnectedDate   TIMESTAMP
+        AccessKeyID         UUID
+    }
+
+    entity "Keys" {
+        *AccessKeyID        UUID
+        AccessKey           CHAR [4096]   
+    }
+
+    entity "DeviceType" {
+        *DeviceTypeId       UUID
+        DeviceName          STRING
+        category            STRING
+    }
+
+    entity "Modules" {
+        *ModuleId           UUID
+        HouseId             UUID
+        ModuleName          STRING
+        ModuleType          enum
+    }
+
+    entity "ModuleDevices" {
+        *DeviceId            UUID
+        *ModuleId            UUID
+    }
+
+    entity "DeviceConfiguration" {
+        *ConfigurationID    UUID
+        DeviceId            UUID
+        ConfigurationKey    STRING
+        Configuration       json
+        CreateDate          TIMESTAMP
+        ChangeDate          TIMESTAMP
+    }
+
+    entity "DeviceData"{
+       *RecordID           UUID
+       DeviceId            UUID
+       DataUrl             STRING
+       CreateDate          TIMESTAMP
+    }
+
+    entity "Telemetry" {
+        *TelemetryId       UUID
+        DeviceID           UUID
+        ModuleId           UUID              
+        Flags              INTEGER
+        MetricName         STRING
+        Kind               INTEGER
+        CreateDate         TIMESTAMP
+        Value              json
+    }   
+}
+
+Roles ||--o{ RoleRigths : "1..*"
+Roles ||--o{ UserRoles : "1..*"
+Users ||--o{ UserRoles : "1..*"
+
+Houses ||--o{ Devices : "1..*"
+Users ||--o{ Houses : "1..*"
+
+Devices ||--|| Keys : "1..1"
+
+Devices ||--|| DeviceType : "1..1"
+Devices ||--o{ DeviceConfiguration : "1..*"
+Devices ||--o{ Telemetry : "1..*"
+Devices ||--o{ DeviceData : "1..*"
+
+Houses ||--o{  Modules : "1..*"
+Modules ||--o{ ModuleDevices : "1..*"
+Devices ||--o{ ModuleDevices : "1..*"
+
+@enduml

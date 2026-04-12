@@ -1,0 +1,41 @@
+@startuml
+title Диаграмма компонентов Идентификация и аутентификация пользователей
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Container.puml
+
+Person(user, "Пользователь", "Просматривает состояние, управляет, регистрирует датчики")
+Person(administrator, "Администратор", "Управляет подключением пользователей, устройств, сетвой безопасностью и телеметрией")
+Container(APIGW, "API-Gateway", "NGinx", "Масштабирование, балансировка нагрузки, шифрование трафика, проксирование и аутентификация")
+ 
+Container_Boundary(UserAuth, "Идентификация и аутентификация пользователей") {
+    
+    Component(APIManager, "API Manager", "Go", "Исполняет API вызовы регистрации, аутентификации пользователей с получением прав доступа, регистрации пользователей, редактирования прав и ролей.")
+    Component(DBManager, "DB Manager", "Go", "Взаимодействует с базой данных")
+    Component(TokenGenerator, "Token Generator", "Go", "Получения jwt-токена")
+    Component(Identification, "Первичная идентификация", "Go", "Управление пользователями и ролями")
+    Component(CheckRigths, "CheckRigths", "Go", "Получение и проверка прав доступа для роли и пользователям")
+    
+  
+    Rel(APIGW, APIManager,"Аутентификация пользователей [REST]")
+    Rel(APIManager, TokenGenerator,"Получение Jwt")
+    Rel(APIManager, Identification,"Регистрация пользователей,назначение прав доступа")
+    Rel(APIManager, CheckRigths,"Проверка прав доступа")
+ 
+    Rel( TokenGenerator, DBManager, "Чтение/запись данных")
+    Rel( Identification, DBManager, "Чтение/запись данных")
+    Rel( CheckRigths, DBManager, "Чтение данных")
+
+    Component(Telemetry, "Telemetry", "[OTel]", "Логирование и сбор метрик")
+ 
+}
+
+ContainerDb(UserAuthDB, "Database", "PostgreSQL", "Хранит данные и полномочия пользователей")
+Rel(DBManager, UserAuthDB,"Чтение и запись данных о пользователях")
+
+Container(Prometeus, "Prometeus", "Prometeus", "Сбор метрик и телеметрии")
+Rel(Telemetry, Prometeus,"Логирование и сбор метрик")
+   
+@enduml
